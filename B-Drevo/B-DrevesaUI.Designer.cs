@@ -108,7 +108,7 @@
             this.nudStopnja.Location = new System.Drawing.Point(0, 19);
             this.nudStopnja.Margin = new System.Windows.Forms.Padding(0);
             this.nudStopnja.Minimum = new decimal(new int[] {
-            2,
+            3,
             0,
             0,
             0});
@@ -116,7 +116,7 @@
             this.nudStopnja.Size = new System.Drawing.Size(179, 20);
             this.nudStopnja.TabIndex = 1;
             this.nudStopnja.Value = new decimal(new int[] {
-            2,
+            3,
             0,
             0,
             0});
@@ -160,9 +160,10 @@
             // btnNalozi
             // 
             this.btnNalozi.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnNalozi.Location = new System.Drawing.Point(182, 3);
+            this.btnNalozi.Location = new System.Drawing.Point(179, 0);
+            this.btnNalozi.Margin = new System.Windows.Forms.Padding(0);
             this.btnNalozi.Name = "btnNalozi";
-            this.btnNalozi.Size = new System.Drawing.Size(174, 32);
+            this.btnNalozi.Size = new System.Drawing.Size(180, 38);
             this.btnNalozi.TabIndex = 1;
             this.btnNalozi.Text = "Naloži iz datoteke";
             this.btnNalozi.UseVisualStyleBackColor = true;
@@ -171,9 +172,10 @@
             // btnSpremeni
             // 
             this.btnSpremeni.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSpremeni.Location = new System.Drawing.Point(3, 3);
+            this.btnSpremeni.Location = new System.Drawing.Point(0, 0);
+            this.btnSpremeni.Margin = new System.Windows.Forms.Padding(0);
             this.btnSpremeni.Name = "btnSpremeni";
-            this.btnSpremeni.Size = new System.Drawing.Size(173, 32);
+            this.btnSpremeni.Size = new System.Drawing.Size(179, 38);
             this.btnSpremeni.TabIndex = 0;
             this.btnSpremeni.Text = "Dodaj ali spremeni stopnjo";
             this.btnSpremeni.UseVisualStyleBackColor = true;
@@ -185,7 +187,7 @@
             this.pbDrevo.Location = new System.Drawing.Point(3, 53);
             this.pbDrevo.Name = "pbDrevo";
             this.pbDrevo.Size = new System.Drawing.Size(730, 585);
-            this.pbDrevo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pbDrevo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pbDrevo.TabIndex = 1;
             this.pbDrevo.TabStop = false;
             // 
@@ -196,7 +198,7 @@
             this.ClientSize = new System.Drawing.Size(736, 641);
             this.Controls.Add(this.tblGlavno);
             this.Name = "BDrevesaUI";
-            this.Text = "B_DrevesaUI";
+            this.Text = "B-Drevesa (IA 6)";
             this.tblGlavno.ResumeLayout(false);
             this.tblZgoraj.ResumeLayout(false);
             this.tblStopnjaDodaj.ResumeLayout(false);

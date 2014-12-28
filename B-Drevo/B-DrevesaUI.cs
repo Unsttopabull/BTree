@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
+using GraphVizWrapper;
+using GraphVizWrapper.Commands;
+using GraphVizWrapper.Queries;
 
 namespace BDrevesa {
 
@@ -22,24 +25,54 @@ namespace BDrevesa {
         }
 
         private void Dodaj(string text) {
-            
+            if (_bDrevo == null) {
+                _bDrevo = new BDrevo((int) nudStopnja.Value);
+            }
+
+            int intVnos;
+            if (!int.TryParse(text, out intVnos)) {
+                MessageBox.Show("Ni veljavno število.");
+                return;
+            }
+
+            _bDrevo.Vstavi(intVnos);
+
+            IzrisiDrevo();
+        }
+
+        private void IzrisiDrevo() {
+            string drevo = _bDrevo.Izrisi();
+            try {
+                var startQuery = new GetStartProcessQuery();
+                var infoQuery = new GetProcessStartInfoQuery();
+                var registerLayout = new RegisterLayoutPluginCommand(infoQuery, startQuery);
+
+                var wrapper = new GraphGeneration(startQuery, infoQuery, registerLayout);
+                byte[] png = wrapper.GenerateGraph(drevo, Enums.GraphReturnType.Png);
+
+                pbDrevo.Image = Image.FromStream(new MemoryStream(png));
+            }
+            catch (Exception) {
+                MessageBox.Show("Napaka med generiranjem slike drevesa");
+            }
         }
 
         private void SpremeniStopnjo(decimal value) {
-            
+            _bDrevo = _bDrevo.SpremeniStopnjo((int) value);
+            IzrisiDrevo();
         }
 
         private void BtnNaloziClick(object sender, EventArgs e) {
             OpenFileDialog ofd = new OpenFileDialog {
                 Multiselect = false,
                 CheckFileExists = true,
+                FileName = "vhod.txt",
                 Filter = "Tekstovna datoteka (*.txt)|*.txt|Vse datoteke (*.*)|*.*",
                 Title = "Izberite datoteko z drevesom",
                 InitialDirectory = Directory.GetCurrentDirectory()
             };
 
             if (ofd.ShowDialog() != DialogResult.OK) {
-                MessageBox.Show("Niste izbrai datoteke");
                 return;
             }
 
@@ -52,11 +85,11 @@ namespace BDrevesa {
                     continue;
                 }
 
+                char c = (char) intVnos;
                 _bDrevo.Vstavi(intVnos);
             }
 
-            string izrisi = _bDrevo.Izrisi();
-            File.WriteAllText("drevo.gv", izrisi);
+            IzrisiDrevo();
         }
     }
 
