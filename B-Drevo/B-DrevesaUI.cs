@@ -16,32 +16,21 @@ namespace BDrevesa {
         }
 
         private void BtnSpremeniClick(object sender, EventArgs e) {
-            if (string.IsNullOrEmpty(tbDodaj.Text)) {
-                SpremeniStopnjo(nudStopnja.Value);
-            }
-            else {
-                Dodaj(tbDodaj.Text);
-            }
-        }
-
-        private void Dodaj(string text) {
             if (_bDrevo == null) {
                 _bDrevo = new BDrevo((int) nudStopnja.Value);
             }
 
-            int intVnos;
-            if (!int.TryParse(text, out intVnos)) {
-                MessageBox.Show("Ni veljavno število.");
-                return;
-            }
-
-            _bDrevo.Vstavi(intVnos);
-
+            _bDrevo.Vstavi((int) nudDodaj.Value);
             IzrisiDrevo();
         }
 
-        private void IzrisiDrevo() {
-            string drevo = _bDrevo.Izrisi();
+        private void NudStopnjaValueChanged(object sender, EventArgs e) {
+            _bDrevo = _bDrevo.SpremeniStopnjo((int) nudStopnja.Value);
+            IzrisiDrevo();
+        }
+
+        private void IzrisiDrevo(bool oznaciNajdeno = false) {
+            string drevo = _bDrevo.Izrisi(oznaciNajdeno);
             try {
                 var startQuery = new GetStartProcessQuery();
                 var infoQuery = new GetProcessStartInfoQuery();
@@ -55,11 +44,6 @@ namespace BDrevesa {
             catch (Exception) {
                 MessageBox.Show("Napaka med generiranjem slike drevesa");
             }
-        }
-
-        private void SpremeniStopnjo(decimal value) {
-            _bDrevo = _bDrevo.SpremeniStopnjo((int) value);
-            IzrisiDrevo();
         }
 
         private void BtnNaloziClick(object sender, EventArgs e) {
@@ -85,11 +69,25 @@ namespace BDrevesa {
                     continue;
                 }
 
-                char c = (char) intVnos;
                 _bDrevo.Vstavi(intVnos);
             }
-
             IzrisiDrevo();
+        }
+
+        private void BtnIsciClick(object sender, EventArgs e) {
+            if (_bDrevo == null) {
+                MessageBox.Show("Ničesar ni v drevesu.");
+                return;
+            }
+
+            int? najdeno = _bDrevo.Isci((int) nudIsci.Value);
+
+            if (najdeno.HasValue) {
+                IzrisiDrevo(true);
+            }
+            else{
+                MessageBox.Show("Vrednost NI bila najdena.");
+            }
         }
     }
 

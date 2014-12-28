@@ -11,6 +11,8 @@ namespace BDrevesa {
         /// <summary>Koren</summary>
         private Vozlisce _t;
 
+        private Vozlisce _najdenoVozlisce;
+
         public BDrevo(int stopnja) {
             if (stopnja < 3) {
                 throw new ArgumentException("Stopnja mora bit večja ali enaka 3", "stopnja");
@@ -50,11 +52,12 @@ namespace BDrevesa {
 
         private int? Isci(Vozlisce x, int kljuc) {
             int i = 0;
-            while (i <= x.N && kljuc > x.Kljuci[i]) {
+            while (i < x.N && kljuc > x.Kljuci[i]) {
                 i++;
             }
 
-            if (i <= x.N && kljuc == x.Kljuci[i]) {
+            if (i < x.N && kljuc == x.Kljuci[i]) {
+                _najdenoVozlisce = x;
                 return kljuc;
             }
 
@@ -64,8 +67,6 @@ namespace BDrevesa {
         }
 
         public void Vstavi(int kljuc) {
-            char c = (char) kljuc;
-
             Vozlisce r = _t;
             if (r.N == _max) {
                 Vozlisce s = new Vozlisce(_stopnja, false);
@@ -144,20 +145,20 @@ namespace BDrevesa {
             x.N = x.N + 1;
         }
 
-        public string Izrisi() {
+        public string Izrisi(bool oznaciNajdeno = false) {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("digraph BDrevo {");
             sb.AppendLine("\tnode [shape=record];");
             sb.AppendLine("\tsplines=\"line\";");
 
             //_t je koren drevesa
-            IzrisiVozlisce(_t, sb, 0);
+            IzrisiVozlisce(_t, sb, 0, oznaciNajdeno);
 
             sb.Append("}");
             return sb.ToString();
         }
 
-        private void IzrisiVozlisce(Vozlisce vozlisce, StringBuilder sb, int idx) {
+        private void IzrisiVozlisce(Vozlisce vozlisce, StringBuilder sb, int idx, bool oznaciNajdeno) {
             string[] kljuci = new string[vozlisce.N];
             string[] povezave = new string[vozlisce.N + 1];
 
@@ -167,7 +168,12 @@ namespace BDrevesa {
             }
             povezave[vozlisce.N] = string.Format("<p{0}>", vozlisce.N);
 
-            sb.AppendFormat("\t{0} [label=\"{{{{{1}}}|{{{2}}}}}\"]{3}", idx, string.Join("|", kljuci), string.Join("|", povezave), Environment.NewLine);
+            string odebelitev = null;
+            if (oznaciNajdeno && _najdenoVozlisce != null && _najdenoVozlisce == vozlisce) {
+                odebelitev = ";penwidth=2";
+            }
+
+            sb.AppendFormat("\t{0} [label=\"{{{{{1}}}|{{{2}}}}}\"{3}]{4}", idx, string.Join("|", kljuci), string.Join("|", povezave), odebelitev, Environment.NewLine);
 
             if (vozlisce.JeList) {
                 return;
@@ -179,7 +185,7 @@ namespace BDrevesa {
                 sb.AppendFormat("\t{0}:p{1}:s -> {2}:n;{3}", idx, i, novIdx, Environment.NewLine);
 
                 if (vozlisce.Sinovi[i] != null) {
-                    IzrisiVozlisce(vozlisce.Sinovi[i], sb, novIdx);
+                    IzrisiVozlisce(vozlisce.Sinovi[i], sb, novIdx, oznaciNajdeno);
                 }
             }
         }
