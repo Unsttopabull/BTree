@@ -3,15 +3,15 @@ using System.Text;
 
 namespace BDrevesa {
 
-    public class BDrevo {
+    public class BDrevo<TValue> where TValue : IComparable<TValue> {
         private readonly int _stopnja;
         private readonly int _min;
         private readonly int _max;
 
         /// <summary>Koren</summary>
-        private Vozlisce _t;
+        private Vozlisce<TValue> _t;
 
-        private Vozlisce _najdenoVozlisce;
+        private Vozlisce<TValue> _najdenoVozlisce;
 
         public BDrevo(int stopnja) {
             if (stopnja < 3) {
@@ -21,18 +21,18 @@ namespace BDrevesa {
             _stopnja = stopnja;
             _min = stopnja - 1;
             _max = 2 * stopnja - 1;
-            _t = new Vozlisce(_stopnja);
+            _t = new Vozlisce<TValue>(_stopnja);
         }
 
-        public BDrevo SpremeniStopnjo(int novaStopnja) {
-            BDrevo drevo = new BDrevo(novaStopnja);
+        public BDrevo<TValue> SpremeniStopnjo(int novaStopnja) {
+            BDrevo<TValue> drevo = new BDrevo<TValue>(novaStopnja);
 
             VstaviVrednostiVozlisca(_t, drevo);
 
             return drevo;
         }
 
-        private void VstaviVrednostiVozlisca(Vozlisce vozlisce, BDrevo drevo) {
+        private void VstaviVrednostiVozlisca(Vozlisce<TValue> vozlisce, BDrevo<TValue> drevo) {
             for (int i = 0; i < vozlisce.N; i++) {
                 drevo.Vstavi(vozlisce.Kljuci[i]);
             }
@@ -46,30 +46,28 @@ namespace BDrevesa {
             }
         }
 
-        public int? Isci(int kljuc) {
+        public bool Isci(TValue kljuc) {
             return Isci(_t, kljuc);
         }
 
-        private int? Isci(Vozlisce x, int kljuc) {
+        private bool Isci(Vozlisce<TValue> x, TValue kljuc) {
             int i = 0;
-            while (i < x.N && kljuc > x.Kljuci[i]) {
+            while (i < x.N && kljuc.CompareTo(x.Kljuci[i]) > 0) {
                 i++;
             }
 
-            if (i < x.N && kljuc == x.Kljuci[i]) {
+            if (i < x.N && kljuc.CompareTo(x.Kljuci[i]) == 0) {
                 _najdenoVozlisce = x;
-                return kljuc;
+                return true;
             }
 
-            return x.JeList
-                       ? null
-                       : Isci(x.Sinovi[i], kljuc);
+            return !x.JeList && Isci(x.Sinovi[i], kljuc);
         }
 
-        public void Vstavi(int kljuc) {
-            Vozlisce r = _t;
+        public void Vstavi(TValue kljuc) {
+            Vozlisce<TValue> r = _t;
             if (r.N == _max) {
-                Vozlisce s = new Vozlisce(_stopnja, false);
+                Vozlisce<TValue> s = new Vozlisce<TValue>(_stopnja, false);
                 _t = s;
                 s.N = 0;
                 s.Sinovi[0] = r;
@@ -82,13 +80,11 @@ namespace BDrevesa {
             }
         }
 
-        private void VstaviNepolno(Vozlisce x, int kljuc) {
-            char c = (char) kljuc;
-
+        private void VstaviNepolno(Vozlisce<TValue> x, TValue kljuc) {
             int i = x.N;
 
             if (x.JeList) {
-                while (i > 0 && kljuc < x.Kljuci[i - 1]) {
+                while (i > 0 && kljuc.CompareTo(x.Kljuci[i - 1]) < 0) {
                     x.Kljuci[i] = x.Kljuci[i - 1];
                     i--;
                 }
@@ -96,7 +92,7 @@ namespace BDrevesa {
                 x.N += 1;
             }
             else {
-                while (i > 0 && kljuc < x.Kljuci[i - 1]) {
+                while (i > 0 && kljuc.CompareTo(x.Kljuci[i - 1]) < 0) {
                     i--;
                 }
                 i++;
@@ -104,7 +100,7 @@ namespace BDrevesa {
                 if (x.Sinovi[i - 1].N == _max) {
                     RazdeliVozlisce(x, i - 1, x.Sinovi[i - 1]);
 
-                    if (kljuc > x.Kljuci[i - 1]) {
+                    if (kljuc.CompareTo(x.Kljuci[i - 1]) > 0) {
                         i++;
                     }
                 }
@@ -113,8 +109,8 @@ namespace BDrevesa {
             }
         }
 
-        private void RazdeliVozlisce(Vozlisce x, int i, Vozlisce y) {
-            Vozlisce z = new Vozlisce(_stopnja, false) {
+        private void RazdeliVozlisce(Vozlisce<TValue> x, int i, Vozlisce<TValue> y) {
+            Vozlisce<TValue> z = new Vozlisce<TValue>(_stopnja, false) {
                 JeList = y.JeList,
                 N = _min
             };
@@ -158,7 +154,7 @@ namespace BDrevesa {
             return sb.ToString();
         }
 
-        private void IzrisiVozlisce(Vozlisce vozlisce, StringBuilder sb, int idx, bool oznaciNajdeno) {
+        private void IzrisiVozlisce(Vozlisce<TValue> vozlisce, StringBuilder sb, int idx, bool oznaciNajdeno) {
             string[] kljuci = new string[vozlisce.N];
             string[] povezave = new string[vozlisce.N + 1];
 
@@ -191,11 +187,11 @@ namespace BDrevesa {
         }
     }
 
-    public class Vozlisce {
+    public class Vozlisce<TValue> where TValue : IComparable<TValue> {
         public Vozlisce(int stopnja, bool jeList = true) {
             int max = 2 * stopnja - 1;
-            Kljuci = new int[max];
-            Sinovi = new Vozlisce[max + 1];
+            Kljuci = new TValue[max];
+            Sinovi = new Vozlisce<TValue>[max + 1];
             N = 0;
             JeList = jeList;
         }
@@ -204,10 +200,10 @@ namespace BDrevesa {
         public int N { get; internal set; }
 
         ///<summary>Dediči, vozlišča spodaj</summary>
-        public Vozlisce[] Sinovi { get; private set; }
+        public Vozlisce<TValue>[] Sinovi { get; private set; }
 
         /// <summary>Vrednosti vozlišča</summary>
-        public int[] Kljuci { get; private set; }
+        public TValue[] Kljuci { get; private set; }
 
         public bool JeList { get; internal set; }
 

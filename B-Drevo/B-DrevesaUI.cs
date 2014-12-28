@@ -9,7 +9,7 @@ using GraphVizWrapper.Queries;
 namespace BDrevesa {
 
     public partial class BDrevesaUI : Form {
-        private BDrevo _bDrevo;
+        private BDrevo<int> _bDrevo;
 
         public BDrevesaUI() {
             InitializeComponent();
@@ -17,7 +17,7 @@ namespace BDrevesa {
 
         private void BtnSpremeniClick(object sender, EventArgs e) {
             if (_bDrevo == null) {
-                _bDrevo = new BDrevo((int) nudStopnja.Value);
+                _bDrevo = new BDrevo<int>((int) nudStopnja.Value);
             }
 
             _bDrevo.Vstavi((int) nudDodaj.Value);
@@ -60,7 +60,7 @@ namespace BDrevesa {
                 return;
             }
 
-            _bDrevo = new BDrevo((int) nudStopnja.Value);
+            _bDrevo = new BDrevo<int>((int) nudStopnja.Value);
             string[] vnosi = File.ReadAllText(ofd.FileName).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string vnos in vnosi) {
@@ -80,9 +80,9 @@ namespace BDrevesa {
                 return;
             }
 
-            int? najdeno = _bDrevo.Isci((int) nudIsci.Value);
+            bool najdeno = _bDrevo.Isci((int) nudIsci.Value);
 
-            if (najdeno.HasValue) {
+            if (najdeno) {
                 IzrisiDrevo(true);
             }
             else{
