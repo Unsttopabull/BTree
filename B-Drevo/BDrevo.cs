@@ -127,7 +127,7 @@ namespace BDrevesa {
 
             y.N = _min; //stopnja - 1
 
-            for (int j = x.N; j > i + 1; j--) {
+            for (int j = x.N+1; j >= i + 1; j--) {
                 x.Sinovi[j] = x.Sinovi[j - 1];
             }
 
