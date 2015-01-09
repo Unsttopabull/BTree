@@ -25,7 +25,7 @@ namespace BDrevesa {
         }
 
         private void NudStopnjaValueChanged(object sender, EventArgs e) {
-            _bDrevo = _bDrevo.SpremeniStopnjo((int) nudStopnja.Value);
+            _bDrevo = _bDrevo.SpremeniStopnjo((int) nudStopnja.Value, cbVrstniRed.Checked);
             IzrisiDrevo();
         }
 

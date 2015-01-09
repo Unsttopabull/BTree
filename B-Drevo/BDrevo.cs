@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace BDrevesa {
@@ -7,27 +8,34 @@ namespace BDrevesa {
         private readonly int _stopnja;
         private readonly int _min;
         private readonly int _max;
+        private readonly LinkedList<TValue> _redVstavljanja;
 
-        /// <summary>Koren</summary>
-        private Vozlisce<TValue> _t;
-
+        private Vozlisce<TValue> _koren;
         private Vozlisce<TValue> _najdenoVozlisce;
 
         public BDrevo(int stopnja) {
-            if (stopnja < 3) {
+            if (stopnja < 2) {
                 throw new ArgumentException("Stopnja mora bit večja ali enaka 3", "stopnja");
             }
 
             _stopnja = stopnja;
             _min = stopnja - 1;
             _max = 2 * stopnja - 1;
-            _t = new Vozlisce<TValue>(_stopnja);
+            _koren = new Vozlisce<TValue>(_stopnja);
+            _redVstavljanja = new LinkedList<TValue>();
         }
 
-        public BDrevo<TValue> SpremeniStopnjo(int novaStopnja) {
+        public BDrevo<TValue> SpremeniStopnjo(int novaStopnja, bool ohraniVrstniRed) {
             BDrevo<TValue> drevo = new BDrevo<TValue>(novaStopnja);
 
-            VstaviVrednostiVozlisca(_t, drevo);
+            if (ohraniVrstniRed) {
+                foreach (TValue kljuc in _redVstavljanja) {
+                    drevo.Vstavi(kljuc);
+                }
+            }
+            else {
+                VstaviVrednostiVozlisca(_koren, drevo);
+            }
 
             return drevo;
         }
@@ -47,7 +55,7 @@ namespace BDrevesa {
         }
 
         public bool Isci(TValue kljuc) {
-            return Isci(_t, kljuc);
+            return Isci(_koren, kljuc);
         }
 
         private bool Isci(Vozlisce<TValue> x, TValue kljuc) {
@@ -65,10 +73,10 @@ namespace BDrevesa {
         }
 
         public void Vstavi(TValue kljuc) {
-            Vozlisce<TValue> r = _t;
+            Vozlisce<TValue> r = _koren;
             if (r.N == _max) {
                 Vozlisce<TValue> s = new Vozlisce<TValue>(_stopnja, false);
-                _t = s;
+                _koren = s;
                 s.N = 0;
                 s.Sinovi[0] = r;
 
@@ -78,6 +86,8 @@ namespace BDrevesa {
             else {
                 VstaviNepolno(r, kljuc);
             }
+
+            _redVstavljanja.AddLast(kljuc);
         }
 
         private void VstaviNepolno(Vozlisce<TValue> x, TValue kljuc) {
@@ -148,7 +158,7 @@ namespace BDrevesa {
             sb.AppendLine("\tsplines=\"line\";");
 
             //_t je koren drevesa
-            IzrisiVozlisce(_t, sb, 0, oznaciNajdeno);
+            IzrisiVozlisce(_koren, sb, 0, oznaciNajdeno);
 
             sb.Append("}");
             return sb.ToString();
