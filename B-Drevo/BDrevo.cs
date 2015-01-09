@@ -157,14 +157,13 @@ namespace BDrevesa {
             sb.AppendLine("\tnode [shape=record];");
             sb.AppendLine("\tsplines=\"line\";");
 
-            //_t je koren drevesa
             IzrisiVozlisce(_koren, sb, 0, oznaciNajdeno);
 
             sb.Append("}");
             return sb.ToString();
         }
 
-        private void IzrisiVozlisce(Vozlisce<TValue> vozlisce, StringBuilder sb, int idx, bool oznaciNajdeno) {
+        private int IzrisiVozlisce(Vozlisce<TValue> vozlisce, StringBuilder sb, int idxVozlisca, bool oznaciNajdeno) {
             string[] kljuci = new string[vozlisce.N];
             string[] povezave = new string[vozlisce.N + 1];
 
@@ -179,21 +178,22 @@ namespace BDrevesa {
                 odebelitev = ";penwidth=2";
             }
 
-            sb.AppendFormat("\t{0} [label=\"{{{{{1}}}|{{{2}}}}}\"{3}]{4}", idx, string.Join("|", kljuci), string.Join("|", povezave), odebelitev, Environment.NewLine);
+            sb.AppendFormat("\t{0} [label=\"{{{{{1}}}|{{{2}}}}}\"{3}]{4}", idxVozlisca, string.Join("|", kljuci), string.Join("|", povezave), odebelitev, Environment.NewLine);
 
             if (vozlisce.JeList) {
-                return;
+                return 0;
             }
 
             int stSinov = vozlisce.StSinov;
-            for (int i = 0; i < stSinov; i++) {
-                int novIdx = idx + i + 1;
-                sb.AppendFormat("\t{0}:p{1}:s -> {2}:n;{3}", idx, i, novIdx, Environment.NewLine);
 
-                if (vozlisce.Sinovi[i] != null) {
-                    IzrisiVozlisce(vozlisce.Sinovi[i], sb, novIdx, oznaciNajdeno);
-                }
+            int currIdx = idxVozlisca;
+            for (int sinSt = 0; sinSt < stSinov; sinSt++) {
+                int idxSina = idxVozlisca + sinSt + 1;
+                sb.AppendFormat("\t{0}:p{1}:s -> {2}:n;{3}", currIdx, sinSt, idxSina, Environment.NewLine);
+
+                idxVozlisca += IzrisiVozlisce(vozlisce.Sinovi[sinSt], sb, idxSina, oznaciNajdeno);
             }
+            return stSinov;
         }
     }
 
