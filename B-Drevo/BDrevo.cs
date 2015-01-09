@@ -15,7 +15,7 @@ namespace BDrevesa {
 
         public BDrevo(int stopnja) {
             if (stopnja < 2) {
-                throw new ArgumentException("Stopnja mora bit večja ali enaka 3", "stopnja");
+                throw new ArgumentException("Stopnja mora bit večja ali enaka 2", "stopnja");
             }
 
             _stopnja = stopnja;
