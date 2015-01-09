@@ -32,6 +32,7 @@ namespace BDrevesa {
         private void IzrisiDrevo(bool oznaciNajdeno = false) {
             string drevo = _bDrevo.Izrisi(oznaciNajdeno);
             try {
+                File.WriteAllText("btree.gv", drevo);
                 var startQuery = new GetStartProcessQuery();
                 var infoQuery = new GetProcessStartInfoQuery();
                 var registerLayout = new RegisterLayoutPluginCommand(infoQuery, startQuery);

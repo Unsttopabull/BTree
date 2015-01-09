@@ -186,14 +186,18 @@ namespace BDrevesa {
 
             int stSinov = vozlisce.StSinov;
 
+            int stPotomcev = stSinov;
+
             int currIdx = idxVozlisca;
             for (int sinSt = 0; sinSt < stSinov; sinSt++) {
                 int idxSina = idxVozlisca + sinSt + 1;
                 sb.AppendFormat("\t{0}:p{1}:s -> {2}:n;{3}", currIdx, sinSt, idxSina, Environment.NewLine);
 
-                idxVozlisca += IzrisiVozlisce(vozlisce.Sinovi[sinSt], sb, idxSina, oznaciNajdeno);
+                int stSinovSina = IzrisiVozlisce(vozlisce.Sinovi[sinSt], sb, idxSina, oznaciNajdeno);
+                idxVozlisca += stSinovSina;
+                stPotomcev += stSinovSina;
             }
-            return stSinov;
+            return stPotomcev;
         }
     }
 

@@ -128,7 +128,7 @@
             this.nudStopnja.Size = new System.Drawing.Size(224, 20);
             this.nudStopnja.TabIndex = 1;
             this.nudStopnja.Value = new decimal(new int[] {
-            3,
+            2,
             0,
             0,
             0});
